@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="story/layout/basic">
+	<th:block layout:fragment="title">
+		<title>This is a list page</title>
+	</th:block>
+	
+	<th:block layout:fragment="search">
+		<div th:replace="story/fragments/common :: search"></div>
+	</th:block>
+	
+	<th:block layout:fragment="content">
+		<div class="table-responsive clearfix">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>레벨</th>
+						<th>등급</th>
+						<th>등록일</th>
+						<th>조회수</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${not #lists.isEmpty( storyList )}" th:each="row : ${storyList}">
+						<td scope="row" th:text="${#strings.equals( row.notiYn, 'Y' ) ? '공지' : row.num}"></td>
+						<td class="text-left">
+							<a th:href="|@{/story/view.do}${params.makeQueryString(params.currentPageNo)}&num=${row.num}|" th:text="${row.title}"></a>
+						</td>
+						<td th:text="${row.nickname}"></td>
+						
+						<td th:text="${row.lev}"></td>
+						<td th:text="${row.grade}"></td>
+						
+						<td th:text="${#temporals.format( row.regTime, 'yyyy-MM-dd' )}"></td>
+						<td th:text="${row.count}"></td>
+					</tr>
+					<tr th:unless="${not #lists.isEmpty( storyList )}">
+						<td colspan="5">조회된 결과가 없습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="btn_wrap text-right">
+				<a th:href="@{/story/write.do}" class="btn btn-primary waves-effect waves-light">Write</a>
+			</div>
+			<th:block layout:fragment="paging">
+				<nav th:replace="story/fragments/common :: pagination"></nav>
+			</th:block>
+		</div>
+		<th:block layout:fragment="script">
+			<script th:inline="javascript">
+				/*<![CDATA[*/
+					function movePage(uri, queryString) {
+						location.href = uri + queryString;
+					}
+					
+					function searchStory(form) {
+						if(isEmpty(form) == true) {
+							var searchKeyword = document.getElementById("mainSearchKeyword");
+							if(isEmpty(searchKeyword.value)==true){
+								alert("키워드를 입력해 주세요.");
+								searchKeyword.focus();
+								return false;
+							}
+							form = document.getElementById("searchForm");
+							form.searchKeyword.value = searchKeyword.value;
+							form.submit();
+						}
+						
+						if (isEmpty(form.searchKeyword.value) == true) {
+							alert("키워드를 입력해 주세요.");
+							form.searchKeyword.focus();
+							return false;
+						}
+					}
+				/*]]>*/
+			</script>
+		</th:block>
+	</th:block>
+</html>
